@@ -1,6 +1,6 @@
 const userContainer = document.getElementById('container');
 const getUsers = () => {
-  return fetch('https://dummyjson.com/todos?limit=15')
+  return fetch('https://dummyjson.com/todos?limit=10')
     .then(response => response.json())
     .then(response => response.todos)
     .catch(error => error);
@@ -46,13 +46,14 @@ const deleteUser = async (userId) => {
       method: 'DELETE'
     });
     if (!response.ok) {
-      throw new Error('Failed to delete task');
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
     }
   } catch (error) {
-    console.log(error);
+    console.error('Error loading resource:', error);
   }
 };
 displayUsers();
+
 const addForm = document.getElementById('addForm');
 addForm.addEventListener('submit', event => {
   event.preventDefault();
@@ -77,11 +78,16 @@ addForm.addEventListener('submit', event => {
         userName.style.textDecoration = 'none';
       }
     });
+    icon.addEventListener('click', () => {
+      deleteUser(newTask);
+      div.remove();
+    });
+
     div.appendChild(checkbox);
     div.appendChild(userName);
     div.appendChild(ids);
     div.setAttribute('key', Date.now());
     div.setAttribute('class', 'people');
-    userContainer.prepend(div);
+    userContainer.appendChild(div); // Append the new task div at the bottom
   }
 });
